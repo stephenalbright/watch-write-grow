@@ -17,6 +17,14 @@ const Index = () => {
   const { data: categories = [], isLoading: categoriesLoading } = useVideoCategories();
   const { data: videos, isLoading: videosLoading, error } = useVideosByCategory(selectedCategory);
 
+  console.log('Current state:', {
+    selectedCategory,
+    currentVideoIndex,
+    videosLength: videos?.length,
+    categories,
+    isLoading: videosLoading
+  });
+
   const handleSubmitWriting = (writing: string) => {
     setUserWriting(writing);
     setFeedbackVisible(true);
@@ -28,6 +36,7 @@ const Index = () => {
   };
 
   const handleCategoryChange = (category: string) => {
+    console.log('Category changed to:', category);
     setSelectedCategory(category);
     setCurrentVideoIndex(0); // Reset to first video when category changes
     setFeedbackVisible(false); // Reset feedback when switching videos
@@ -35,6 +44,7 @@ const Index = () => {
   };
 
   const handlePreviousVideo = () => {
+    console.log('Previous video clicked, current index:', currentVideoIndex);
     if (currentVideoIndex > 0) {
       setCurrentVideoIndex(currentVideoIndex - 1);
       setFeedbackVisible(false);
@@ -43,6 +53,7 @@ const Index = () => {
   };
 
   const handleNextVideo = () => {
+    console.log('Next video clicked, current index:', currentVideoIndex, 'total videos:', videos?.length);
     if (videos && currentVideoIndex < videos.length - 1) {
       setCurrentVideoIndex(currentVideoIndex + 1);
       setFeedbackVisible(false);
@@ -59,7 +70,14 @@ const Index = () => {
   };
 
   const currentVideo = videos && videos.length > 0 ? videos[currentVideoIndex] : placeholderVideo;
+  const totalVideos = videos?.length || 0;
   const isLoading = categoriesLoading || videosLoading;
+
+  console.log('Rendering with:', {
+    currentVideo: currentVideo?.title,
+    totalVideos,
+    showNavigation: totalVideos > 1
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-4 md:p-6">
@@ -82,6 +100,8 @@ const Index = () => {
         {error && (
           <div className="text-center text-red-600 mb-4">
             Using placeholder video (Error: {error.message})
+            <br />
+            <small>Check console for detailed error information</small>
           </div>
         )}
 
@@ -98,14 +118,21 @@ const Index = () => {
           caption={currentVideo.title}
         />
 
-        {videos && videos.length > 1 && (
-          <VideoNavigation
-            currentIndex={currentVideoIndex}
-            totalVideos={videos.length}
-            onPrevious={handlePreviousVideo}
-            onNext={handleNextVideo}
-            category={selectedCategory}
-          />
+        {/* Always show navigation for debugging, but disable buttons appropriately */}
+        <VideoNavigation
+          currentIndex={currentVideoIndex}
+          totalVideos={Math.max(totalVideos, 1)} // Show at least 1 to make navigation visible
+          onPrevious={handlePreviousVideo}
+          onNext={handleNextVideo}
+          category={selectedCategory}
+        />
+
+        {totalVideos === 0 && (
+          <div className="text-center text-amber-600 bg-amber-50 p-4 rounded-lg">
+            No videos found in database. Using placeholder video for demo.
+            <br />
+            <small>Check console logs for debugging information.</small>
+          </div>
         )}
 
         <WritingPromptCard 

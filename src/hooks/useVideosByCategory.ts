@@ -22,13 +22,15 @@ export const useVideosByCategory = (category: string) => {
 
       if (error) {
         console.error('Error fetching videos by category:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
         throw error;
       }
 
       console.log(`Videos fetched for ${category}:`, data);
       console.log(`Number of videos in ${category}:`, data?.length || 0);
+      console.log('Raw video data:', JSON.stringify(data, null, 2));
       
-      return data;
+      return data || [];
     },
     enabled: !!category,
   });

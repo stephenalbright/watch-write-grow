@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import VideoCard from '../components/VideoCard';
-import DescriptionCard from '../components/DescriptionCard';
 import WritingPromptCard from '../components/WritingPromptCard';
 import FeedbackSection from '../components/FeedbackSection';
 
@@ -39,16 +38,10 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <VideoCard 
-            videoUrl={videoData.videoUrl}
-            caption={videoData.caption}
-          />
-          
-          <DescriptionCard 
-            description={videoData.description}
-          />
-        </div>
+        <VideoCard 
+          videoUrl={videoData.videoUrl}
+          caption={videoData.caption}
+        />
 
         <WritingPromptCard 
           onSubmit={handleSubmitWriting}

@@ -12,10 +12,6 @@ const Index = () => {
 
   const { data: videos, isLoading, error } = useVideos();
 
-  console.log('Videos data:', videos);
-  console.log('Videos length:', videos?.length);
-  console.log('Current video index:', currentVideoIndex);
-
   const handleSubmitWriting = (writing: string) => {
     setUserWriting(writing);
     setFeedbackVisible(true);
@@ -26,43 +22,15 @@ const Index = () => {
     setFeedbackVisible(false);
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
-        <div className="text-lg text-gray-600">Loading videos...</div>
-      </div>
-    );
-  }
+  // Use placeholder data if no videos are available
+  const placeholderVideo = {
+    id: 1,
+    title: "Sample Video",
+    file_path: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    description: "A sample video for testing purposes"
+  };
 
-  if (error) {
-    console.error('Video loading error:', error);
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
-        <div className="text-lg text-red-600">Error loading videos: {error.message}</div>
-      </div>
-    );
-  }
-
-  if (!videos || videos.length === 0) {
-    console.log('No videos found. Videos:', videos);
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
-        <div className="text-lg text-gray-600">No videos found.</div>
-      </div>
-    );
-  }
-
-  const currentVideo = videos[currentVideoIndex];
-  console.log('Current video:', currentVideo);
-
-  if (!currentVideo) {
-    console.log('Current video is undefined. Index:', currentVideoIndex, 'Videos:', videos);
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
-        <div className="text-lg text-gray-600">Video not found.</div>
-      </div>
-    );
-  }
+  const currentVideo = videos && videos.length > 0 ? videos[currentVideoIndex] : placeholderVideo;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-4 md:p-6">
@@ -75,6 +43,18 @@ const Index = () => {
             Watch the video, then describe what you saw
           </p>
         </div>
+
+        {isLoading && (
+          <div className="text-center text-gray-600 mb-4">
+            Loading videos...
+          </div>
+        )}
+
+        {error && (
+          <div className="text-center text-red-600 mb-4">
+            Using placeholder video (Error: {error.message})
+          </div>
+        )}
 
         <VideoCard 
           videoUrl={currentVideo.file_path}
@@ -90,7 +70,7 @@ const Index = () => {
         {feedbackVisible && (
           <FeedbackSection 
             userWriting={userWriting}
-            videoDescription={currentVideo.description || ''}
+            videoDescription={currentVideo.description || 'Sample video description'}
           />
         )}
       </div>

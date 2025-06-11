@@ -2,30 +2,29 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export const useVideos = () => {
+export const useVideos = (category?: string) => {
   return useQuery({
-    queryKey: ['videos'],
+    queryKey: ['videos', category || 'all'],
     queryFn: async () => {
-      console.log('Fetching videos from Supabase...');
-      const { data, error } = await supabase
+      let query = supabase
         .from('videos')
-        .select('*')
+        .select('id, title, description, file_path, order_sequence, categories')
         .order('order_sequence', { ascending: true });
 
+      // Filter by category if provided and not "all"
+      if (category && category !== 'all') {
+        query = query.eq('categories', category);
+      }
+
+      const { data, error } = await query;
+
       if (error) {
-        console.error('Error fetching videos:', error);
         throw error;
       }
 
-      console.log('Videos fetched:', data);
-      console.log('Number of videos:', data?.length || 0);
-      
-      // Log each video for debugging
-      data?.forEach((video, index) => {
-        console.log(`Video ${index}:`, video);
-      });
-
-      return data;
+      return data || [];
     },
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };

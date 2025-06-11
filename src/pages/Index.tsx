@@ -4,21 +4,14 @@ import VideoCard from '../components/VideoCard';
 import WritingPromptCard from '../components/WritingPromptCard';
 import FeedbackSection from '../components/FeedbackSection';
 import VideoNavigation from '../components/VideoNavigation';
-import { useAllVideos } from '../hooks/useAllVideos';
+import { useVideos } from '../hooks/useVideos';
 
 const Index = () => {
   const [userWriting, setUserWriting] = useState('');
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
-  const { data: videos, isLoading, error, refetch } = useAllVideos();
-
-  console.log('Current state:', {
-    currentVideoIndex,
-    videosLength: videos?.length,
-    isLoading,
-    error: error?.message
-  });
+  const { data: videos, isLoading, error, refetch } = useVideos();
 
   const handleSubmitWriting = (writing: string) => {
     setUserWriting(writing);
@@ -31,7 +24,6 @@ const Index = () => {
   };
 
   const handlePreviousVideo = () => {
-    console.log('Previous video clicked, current index:', currentVideoIndex);
     if (currentVideoIndex > 0) {
       setCurrentVideoIndex(currentVideoIndex - 1);
       setFeedbackVisible(false);
@@ -40,7 +32,6 @@ const Index = () => {
   };
 
   const handleNextVideo = () => {
-    console.log('Next video clicked, current index:', currentVideoIndex, 'total videos:', videos?.length);
     if (videos && currentVideoIndex < videos.length - 1) {
       setCurrentVideoIndex(currentVideoIndex + 1);
       setFeedbackVisible(false);
@@ -50,12 +41,6 @@ const Index = () => {
 
   const currentVideo = videos && videos.length > 0 ? videos[currentVideoIndex] : null;
   const totalVideos = videos?.length || 0;
-
-  console.log('Rendering with:', {
-    currentVideo: currentVideo?.title,
-    totalVideos,
-    showNavigation: totalVideos > 1
-  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-4 md:p-6">
@@ -85,8 +70,6 @@ const Index = () => {
             >
               Retry
             </button>
-            <br />
-            <small>Check console for detailed error information</small>
           </div>
         )}
 
@@ -100,8 +83,6 @@ const Index = () => {
             >
               Refresh
             </button>
-            <br />
-            <small>Check console logs for debugging information.</small>
           </div>
         )}
 

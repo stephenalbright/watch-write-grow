@@ -18,6 +18,13 @@ export const useVideos = () => {
       }
 
       console.log('Videos fetched:', data);
+      console.log('Number of videos:', data?.length || 0);
+      
+      // Log each video for debugging
+      data?.forEach((video, index) => {
+        console.log(`Video ${index}:`, video);
+      });
+
       return data;
     },
   });

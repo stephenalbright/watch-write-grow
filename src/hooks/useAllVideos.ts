@@ -15,10 +15,10 @@ export const useAllVideos = () => {
       
       console.log('Video count query result:', { count, countError });
       
-      // Now fetch the actual data
+      // Now fetch the actual data with the correct column name
       const { data, error } = await supabase
         .from('videos')
-        .select('*')
+        .select('id, title, description, file_path, order_sequence, Categories')
         .order('order_sequence', { ascending: true });
 
       console.log('Query executed successfully');
@@ -37,14 +37,9 @@ export const useAllVideos = () => {
       console.log('Number of videos:', data?.length || 0);
       console.log('Raw video data:', JSON.stringify(data, null, 2));
       
-      // Let's also try a simpler query to see if there's any data at all
-      const { data: simpleData, error: simpleError } = await supabase
-        .from('videos')
-        .select('id, title');
-      
-      console.log('Simple query result:', { simpleData, simpleError });
-      
       return data || [];
     },
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };

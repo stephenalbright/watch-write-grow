@@ -11,12 +11,13 @@ const Index = () => {
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
-  const { data: videos, isLoading, error } = useAllVideos();
+  const { data: videos, isLoading, error, refetch } = useAllVideos();
 
   console.log('Current state:', {
     currentVideoIndex,
     videosLength: videos?.length,
-    isLoading
+    isLoading,
+    error: error?.message
   });
 
   const handleSubmitWriting = (writing: string) => {
@@ -75,16 +76,30 @@ const Index = () => {
         )}
 
         {error && (
-          <div className="text-center text-red-600 mb-4">
+          <div className="text-center text-red-600 mb-4 p-4 bg-red-50 rounded-lg">
             Error loading videos: {error.message}
+            <br />
+            <button 
+              onClick={() => refetch()} 
+              className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Retry
+            </button>
             <br />
             <small>Check console for detailed error information</small>
           </div>
         )}
 
-        {!currentVideo && !isLoading && (
+        {!currentVideo && !isLoading && !error && (
           <div className="text-center text-amber-600 bg-amber-50 p-4 rounded-lg">
             No videos found in database.
+            <br />
+            <button 
+              onClick={() => refetch()} 
+              className="mt-2 px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700"
+            >
+              Refresh
+            </button>
             <br />
             <small>Check console logs for debugging information.</small>
           </div>

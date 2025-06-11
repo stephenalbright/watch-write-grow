@@ -9,7 +9,7 @@ export const useVideoCategories = () => {
       console.log('Fetching video categories...');
       
       const { data, error } = await supabase
-        .from('videos')
+        .from('video')
         .select('category')
         .not('category', 'is', null);
 

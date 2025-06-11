@@ -9,7 +9,7 @@ export const useVideosByCategory = (category: string) => {
       console.log(`Fetching videos for category: ${category}`);
       
       let query = supabase
-        .from('videos')
+        .from('video')
         .select('*')
         .order('order_sequence', { ascending: true });
 

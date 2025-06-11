@@ -5,7 +5,6 @@ import WritingPromptCard from '../components/WritingPromptCard';
 import FeedbackSection from '../components/FeedbackSection';
 import VideoNavigation from '../components/VideoNavigation';
 import { useVideos } from '../hooks/useVideos';
-import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
   const [userWriting, setUserWriting] = useState('');
@@ -13,31 +12,6 @@ const Index = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
   const { data: videos, isLoading, error, refetch } = useVideos();
-
-  // 🔍 DEBUG LOGGING
-  console.log('🎬 Index Component Debug:');
-  console.log('  - videos:', videos);
-  console.log('  - videos length:', videos?.length);
-  console.log('  - isLoading:', isLoading);
-  console.log('  - error:', error);
-  console.log('  - currentVideoIndex:', currentVideoIndex);
-
-  // 🧪 TEST BUTTON - Direct Supabase connection test
-  const testSupabaseConnection = async () => {
-    console.log('🧪 Testing direct Supabase connection...');
-    try {
-      const { data, error } = await supabase
-        .from('videos')
-        .select('*')
-        .limit(1);
-      
-      console.log('🧪 Direct test result:', { data, error });
-      alert(`Test result: ${data?.length || 0} videos found. Check console for details.`);
-    } catch (err) {
-      console.error('🧪 Direct test failed:', err);
-      alert('Direct test failed. Check console for details.');
-    }
-  };
 
   const handleSubmitWriting = (writing: string) => {
     setUserWriting(writing);
@@ -68,38 +42,12 @@ const Index = () => {
   const currentVideo = videos && videos.length > 0 ? videos[currentVideoIndex] : null;
   const totalVideos = videos?.length || 0;
 
-  // 🎯 ENHANCED CONDITIONAL RENDERING DEBUG
-  console.log('🎯 Rendering conditions:');
-  console.log('  - videos exists:', !!videos);
-  console.log('  - videos is array:', Array.isArray(videos));
-  console.log('  - videos length > 0:', videos && videos.length > 0);
-  console.log('  - currentVideo:', currentVideo);
-  console.log('  - will show "no videos":', !videos || videos.length === 0);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">Watch & Write</h1>
           <p className="text-gray-600">Watch the video, then describe what you saw</p>
-          
-          {/* 🧪 TEMPORARY DEBUG BUTTON - Remove this once fixed */}
-          <button
-            onClick={testSupabaseConnection}
-            className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            🧪 Test Supabase Connection
-          </button>
-        </div>
-
-        {/* 🔍 ENHANCED DEBUG INFO DISPLAY */}
-        <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
-          <h3 className="font-bold">🐛 Debug Info:</h3>
-          <p>Loading: {isLoading ? 'YES' : 'NO'}</p>
-          <p>Error: {error ? error.message : 'None'}</p>
-          <p>Videos found: {videos?.length || 0}</p>
-          <p>Current video index: {currentVideoIndex}</p>
-          <p>Current video exists: {currentVideo ? 'YES' : 'NO'}</p>
         </div>
 
         {isLoading ? (
@@ -130,9 +78,6 @@ const Index = () => {
           </div>
         ) : (
           <div>
-            <p className="text-green-600 text-center mb-4">
-              ✅ {videos.length} videos loaded successfully!
-            </p>
             {currentVideo && (
               <>
                 <VideoCard 

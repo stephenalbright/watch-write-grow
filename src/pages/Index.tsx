@@ -12,6 +12,10 @@ const Index = () => {
 
   const { data: videos, isLoading, error } = useVideos();
 
+  console.log('Videos data:', videos);
+  console.log('Videos length:', videos?.length);
+  console.log('Current video index:', currentVideoIndex);
+
   const handleSubmitWriting = (writing: string) => {
     setUserWriting(writing);
     setFeedbackVisible(true);
@@ -31,6 +35,7 @@ const Index = () => {
   }
 
   if (error) {
+    console.error('Video loading error:', error);
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
         <div className="text-lg text-red-600">Error loading videos: {error.message}</div>
@@ -39,6 +44,7 @@ const Index = () => {
   }
 
   if (!videos || videos.length === 0) {
+    console.log('No videos found. Videos:', videos);
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
         <div className="text-lg text-gray-600">No videos found.</div>
@@ -47,6 +53,16 @@ const Index = () => {
   }
 
   const currentVideo = videos[currentVideoIndex];
+  console.log('Current video:', currentVideo);
+
+  if (!currentVideo) {
+    console.log('Current video is undefined. Index:', currentVideoIndex, 'Videos:', videos);
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
+        <div className="text-lg text-gray-600">Video not found.</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-4 md:p-6">
@@ -74,7 +90,7 @@ const Index = () => {
         {feedbackVisible && (
           <FeedbackSection 
             userWriting={userWriting}
-            videoDescription={currentVideo.description}
+            videoDescription={currentVideo.description || ''}
           />
         )}
       </div>

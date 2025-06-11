@@ -8,10 +8,10 @@ const Index = () => {
   const [userWriting, setUserWriting] = useState('');
   const [feedbackVisible, setFeedbackVisible] = useState(false);
 
-  // Mock video data - in real app this would come from Supabase
+  // Mock video data - using a working video URL
   const videoData = {
     id: 1,
-    videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     description: "A woman throws a red ball in the park. Her dog chases it while people relax nearby. Trees sway in the gentle breeze.",
     caption: "🐶 + 🧺 = ❤️"
   };

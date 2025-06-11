@@ -7,7 +7,6 @@ export const useAllVideos = () => {
     queryKey: ['all-videos'],
     queryFn: async () => {
       console.log('Fetching all videos...');
-      console.log('Supabase client URL:', supabase.supabaseUrl);
       
       // First, let's try to get a count of videos
       const { count, error: countError } = await supabase

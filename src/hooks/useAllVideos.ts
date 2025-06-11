@@ -15,15 +15,48 @@ export const useAllVideos = () => {
       
       console.log('Video count query result:', { count, countError });
       
-      // Now fetch the actual data with the correct column name
-      const { data, error } = await supabase
+      // Now fetch the actual data - let's try both column name variations
+      let { data, error } = await supabase
         .from('videos')
-        .select('id, title, description, file_path, order_sequence, Categories')
+        .select('id, title, description, file_path, order_sequence, "Categories"')
         .order('order_sequence', { ascending: true });
 
-      console.log('Query executed successfully');
-      console.log('Supabase response - data:', data);
-      console.log('Supabase response - error:', error);
+      console.log('Query with Categories (capital C) - data:', data, 'error:', error);
+
+      // If that fails, try with lowercase categories
+      if (error || !data || data.length === 0) {
+        console.log('Trying with lowercase category column...');
+        const { data: data2, error: error2 } = await supabase
+          .from('videos')
+          .select('id, title, description, file_path, order_sequence, category')
+          .order('order_sequence', { ascending: true });
+        
+        console.log('Query with category (lowercase) - data:', data2, 'error:', error2);
+        
+        if (!error2 && data2) {
+          data = data2;
+          error = error2;
+        }
+      }
+
+      // If still no data, try selecting all columns
+      if (!data || data.length === 0) {
+        console.log('Trying to select all columns...');
+        const { data: data3, error: error3 } = await supabase
+          .from('videos')
+          .select('*')
+          .order('order_sequence', { ascending: true });
+        
+        console.log('Query with all columns - data:', data3, 'error:', error3);
+        
+        if (!error3 && data3) {
+          data = data3;
+          error = error3;
+        }
+      }
+
+      console.log('Final query result - data:', data);
+      console.log('Final query result - error:', error);
       console.log('Data type:', typeof data);
       console.log('Is data an array?', Array.isArray(data));
 

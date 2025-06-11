@@ -3,14 +3,19 @@ import React, { useState } from 'react';
 import VideoCard from '../components/VideoCard';
 import WritingPromptCard from '../components/WritingPromptCard';
 import FeedbackSection from '../components/FeedbackSection';
-import { useVideos } from '../hooks/useVideos';
+import CategorySelector from '../components/CategorySelector';
+import VideoNavigation from '../components/VideoNavigation';
+import { useVideosByCategory } from '../hooks/useVideosByCategory';
+import { useVideoCategories } from '../hooks/useVideoCategories';
 
 const Index = () => {
   const [userWriting, setUserWriting] = useState('');
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const { data: videos, isLoading, error } = useVideos();
+  const { data: categories = [], isLoading: categoriesLoading } = useVideoCategories();
+  const { data: videos, isLoading: videosLoading, error } = useVideosByCategory(selectedCategory);
 
   const handleSubmitWriting = (writing: string) => {
     setUserWriting(writing);
@@ -22,6 +27,29 @@ const Index = () => {
     setFeedbackVisible(false);
   };
 
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentVideoIndex(0); // Reset to first video when category changes
+    setFeedbackVisible(false); // Reset feedback when switching videos
+    setUserWriting('');
+  };
+
+  const handlePreviousVideo = () => {
+    if (currentVideoIndex > 0) {
+      setCurrentVideoIndex(currentVideoIndex - 1);
+      setFeedbackVisible(false);
+      setUserWriting('');
+    }
+  };
+
+  const handleNextVideo = () => {
+    if (videos && currentVideoIndex < videos.length - 1) {
+      setCurrentVideoIndex(currentVideoIndex + 1);
+      setFeedbackVisible(false);
+      setUserWriting('');
+    }
+  };
+
   // Use placeholder data if no videos are available
   const placeholderVideo = {
     id: 1,
@@ -31,6 +59,7 @@ const Index = () => {
   };
 
   const currentVideo = videos && videos.length > 0 ? videos[currentVideoIndex] : placeholderVideo;
+  const isLoading = categoriesLoading || videosLoading;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-4 md:p-6">
@@ -56,10 +85,28 @@ const Index = () => {
           </div>
         )}
 
+        {!categoriesLoading && categories.length > 0 && (
+          <CategorySelector
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+            categories={categories}
+          />
+        )}
+
         <VideoCard 
           videoUrl={currentVideo.file_path}
           caption={currentVideo.title}
         />
+
+        {videos && videos.length > 1 && (
+          <VideoNavigation
+            currentIndex={currentVideoIndex}
+            totalVideos={videos.length}
+            onPrevious={handlePreviousVideo}
+            onNext={handleNextVideo}
+            category={selectedCategory}
+          />
+        )}
 
         <WritingPromptCard 
           onSubmit={handleSubmitWriting}

@@ -3,18 +3,14 @@ import React, { useState } from 'react';
 import VideoCard from '../components/VideoCard';
 import WritingPromptCard from '../components/WritingPromptCard';
 import FeedbackSection from '../components/FeedbackSection';
+import { useVideos } from '../hooks/useVideos';
 
 const Index = () => {
   const [userWriting, setUserWriting] = useState('');
   const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
-  // Mock video data - using a working video URL
-  const videoData = {
-    id: 1,
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    description: "A woman throws a red ball in the park. Her dog chases it while people relax nearby. Trees sway in the gentle breeze.",
-    caption: "🐶 + 🧺 = ❤️"
-  };
+  const { data: videos, isLoading, error } = useVideos();
 
   const handleSubmitWriting = (writing: string) => {
     setUserWriting(writing);
@@ -25,6 +21,32 @@ const Index = () => {
     setUserWriting('');
     setFeedbackVisible(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
+        <div className="text-lg text-gray-600">Loading videos...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
+        <div className="text-lg text-red-600">Error loading videos: {error.message}</div>
+      </div>
+    );
+  }
+
+  if (!videos || videos.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
+        <div className="text-lg text-gray-600">No videos found.</div>
+      </div>
+    );
+  }
+
+  const currentVideo = videos[currentVideoIndex];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-4 md:p-6">
@@ -39,8 +61,8 @@ const Index = () => {
         </div>
 
         <VideoCard 
-          videoUrl={videoData.videoUrl}
-          caption={videoData.caption}
+          videoUrl={currentVideo.video_url}
+          caption={currentVideo.caption || undefined}
         />
 
         <WritingPromptCard 
@@ -52,7 +74,7 @@ const Index = () => {
         {feedbackVisible && (
           <FeedbackSection 
             userWriting={userWriting}
-            videoDescription={videoData.description}
+            videoDescription={currentVideo.description}
           />
         )}
       </div>

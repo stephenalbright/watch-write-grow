@@ -38,7 +38,7 @@ const VideoNavigation: React.FC<VideoNavigationProps> = ({
           Video {currentIndex + 1} of {totalVideos}
         </p>
         <p className="text-sm text-gray-600 capitalize">
-          {category} Category
+          {category}
         </p>
       </div>
       

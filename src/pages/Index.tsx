@@ -3,26 +3,20 @@ import React, { useState } from 'react';
 import VideoCard from '../components/VideoCard';
 import WritingPromptCard from '../components/WritingPromptCard';
 import FeedbackSection from '../components/FeedbackSection';
-import CategorySelector from '../components/CategorySelector';
 import VideoNavigation from '../components/VideoNavigation';
-import { useVideosByCategory } from '../hooks/useVideosByCategory';
-import { useVideoCategories } from '../hooks/useVideoCategories';
+import { useAllVideos } from '../hooks/useAllVideos';
 
 const Index = () => {
   const [userWriting, setUserWriting] = useState('');
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const { data: categories = [], isLoading: categoriesLoading } = useVideoCategories();
-  const { data: videos, isLoading: videosLoading, error } = useVideosByCategory(selectedCategory);
+  const { data: videos, isLoading, error } = useAllVideos();
 
   console.log('Current state:', {
-    selectedCategory,
     currentVideoIndex,
     videosLength: videos?.length,
-    categories,
-    isLoading: videosLoading
+    isLoading
   });
 
   const handleSubmitWriting = (writing: string) => {
@@ -33,14 +27,6 @@ const Index = () => {
   const handleTryAgain = () => {
     setUserWriting('');
     setFeedbackVisible(false);
-  };
-
-  const handleCategoryChange = (category: string) => {
-    console.log('Category changed to:', category);
-    setSelectedCategory(category);
-    setCurrentVideoIndex(0); // Reset to first video when category changes
-    setFeedbackVisible(false); // Reset feedback when switching videos
-    setUserWriting('');
   };
 
   const handlePreviousVideo = () => {
@@ -61,17 +47,8 @@ const Index = () => {
     }
   };
 
-  // Use placeholder data if no videos are available
-  const placeholderVideo = {
-    id: 1,
-    title: "Sample Video",
-    file_path: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    description: "A sample video for testing purposes"
-  };
-
-  const currentVideo = videos && videos.length > 0 ? videos[currentVideoIndex] : placeholderVideo;
+  const currentVideo = videos && videos.length > 0 ? videos[currentVideoIndex] : null;
   const totalVideos = videos?.length || 0;
-  const isLoading = categoriesLoading || videosLoading;
 
   console.log('Rendering with:', {
     currentVideo: currentVideo?.title,
@@ -99,53 +76,50 @@ const Index = () => {
 
         {error && (
           <div className="text-center text-red-600 mb-4">
-            Using placeholder video (Error: {error.message})
+            Error loading videos: {error.message}
             <br />
             <small>Check console for detailed error information</small>
           </div>
         )}
 
-        {!categoriesLoading && categories.length > 0 && (
-          <CategorySelector
-            selectedCategory={selectedCategory}
-            onCategoryChange={handleCategoryChange}
-            categories={categories}
-          />
-        )}
-
-        <VideoCard 
-          videoUrl={currentVideo.file_path}
-          caption={currentVideo.title}
-        />
-
-        {/* Always show navigation for debugging, but disable buttons appropriately */}
-        <VideoNavigation
-          currentIndex={currentVideoIndex}
-          totalVideos={Math.max(totalVideos, 1)} // Show at least 1 to make navigation visible
-          onPrevious={handlePreviousVideo}
-          onNext={handleNextVideo}
-          category={selectedCategory}
-        />
-
-        {totalVideos === 0 && (
+        {!currentVideo && !isLoading && (
           <div className="text-center text-amber-600 bg-amber-50 p-4 rounded-lg">
-            No videos found in database. Using placeholder video for demo.
+            No videos found in database.
             <br />
             <small>Check console logs for debugging information.</small>
           </div>
         )}
 
-        <WritingPromptCard 
-          onSubmit={handleSubmitWriting}
-          isSubmitted={feedbackVisible}
-          onTryAgain={handleTryAgain}
-        />
+        {currentVideo && (
+          <>
+            <VideoCard 
+              videoUrl={currentVideo.file_path}
+              caption={currentVideo.title}
+            />
 
-        {feedbackVisible && (
-          <FeedbackSection 
-            userWriting={userWriting}
-            videoDescription={currentVideo.description || 'Sample video description'}
-          />
+            {totalVideos > 1 && (
+              <VideoNavigation
+                currentIndex={currentVideoIndex}
+                totalVideos={totalVideos}
+                onPrevious={handlePreviousVideo}
+                onNext={handleNextVideo}
+                category="all videos"
+              />
+            )}
+
+            <WritingPromptCard 
+              onSubmit={handleSubmitWriting}
+              isSubmitted={feedbackVisible}
+              onTryAgain={handleTryAgain}
+            />
+
+            {feedbackVisible && (
+              <FeedbackSection 
+                userWriting={userWriting}
+                videoDescription={currentVideo.description || 'Video description not available'}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

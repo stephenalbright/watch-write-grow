@@ -61,8 +61,8 @@ const Index = () => {
         </div>
 
         <VideoCard 
-          videoUrl={currentVideo.video_url}
-          caption={currentVideo.caption || undefined}
+          videoUrl={currentVideo.file_path}
+          caption={currentVideo.title}
         />
 
         <WritingPromptCard 

@@ -108,8 +108,7 @@ export type Database = {
       }
       videos: {
         Row: {
-          "All Videos": string | null
-          category: string | null
+          Categories: string | null
           created_at: string
           description: string | null
           file_path: string
@@ -119,8 +118,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          "All Videos"?: string | null
-          category?: string | null
+          Categories?: string | null
           created_at?: string
           description?: string | null
           file_path: string
@@ -130,8 +128,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          "All Videos"?: string | null
-          category?: string | null
+          Categories?: string | null
           created_at?: string
           description?: string | null
           file_path?: string
@@ -234,8 +231,7 @@ export type Database = {
       get_next_video: {
         Args: { p_user_id: string; p_category: string }
         Returns: {
-          "All Videos": string | null
-          category: string | null
+          Categories: string | null
           created_at: string
           description: string | null
           file_path: string

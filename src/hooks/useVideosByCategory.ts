@@ -15,7 +15,7 @@ export const useVideosByCategory = (category: string) => {
 
       // Filter by category if not "all"
       if (category !== 'all') {
-        query = query.eq('category', category);
+        query = query.eq('Categories', category);
       }
 
       const { data, error } = await query;

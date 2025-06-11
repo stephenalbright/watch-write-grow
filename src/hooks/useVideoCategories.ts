@@ -10,8 +10,8 @@ export const useVideoCategories = () => {
       
       const { data, error } = await supabase
         .from('videos')
-        .select('Categories')
-        .not('Categories', 'is', null);
+        .select('categories')
+        .not('categories', 'is', null);
 
       if (error) {
         console.error('Error fetching categories:', error);
@@ -22,7 +22,7 @@ export const useVideoCategories = () => {
       console.log('Raw category data:', JSON.stringify(data, null, 2));
 
       // Get unique categories and add "all" option
-      const uniqueCategories = [...new Set(data?.map(item => item.Categories).filter(Boolean))];
+      const uniqueCategories = [...new Set(data?.map(item => item.categories).filter(Boolean))];
       const categories = ['all', ...uniqueCategories];
       
       console.log('Available categories:', categories);
